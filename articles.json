@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Article",
+    "code": "1",
+    "description": "Saitama",
+    "image": "https://www.mundodeportivo.com/alfabeta/hero/2023/04/one-punch-man-saitama-poder.jpg?width=768&aspect_ratio=16:9&format=nowebp",
+    "price": 150,
+    "quantity": 10
+  },
+  {
+    "name": "Ezio",
+    "code": "2",
+    "description": "Assassin's Creed",
+    "image": "https://staticctf.ubisoft.com/J3yJr34U2pZ2Ieem48Dwy9uqj5PNUQTn/5qsP1Cndcqpe7nqn5AOeD6/ebecd02eded46f79054c14808f8a22f1/ezio_collection_ncsa-pagemeta-key-art.jpg",
+    "price": "100000",
+    "quantity": "2"
+  },
+  {
+    "name": "Geralt de Riv",
+    "code": "3",
+    "description": "The Witcher",
+    "image": "https://www.culture-games.com/wp-content/uploads/personnages/Geralt-de-Riv-liste-une.jpg",
+    "price": "10000",
+    "quantity": "5"
+  },
+  {
+    "name": "Luffy",
+    "code": "4",
+    "description": "One Piece",
+    "image": "https://e0.pxfuel.com/wallpapers/915/665/desktop-wallpaper-luffy-manga-badasse.jpg",
+    "price": "100",
+    "quantity": "5"
+  }
+]

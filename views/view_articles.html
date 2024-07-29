@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des Articles</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Liste des Articles</h1>
+        <div class="row" id="articlesList">
+            <!-- Les articles seront ajoutés dynamiquement ici -->
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/articles') // Appel à la route qui renvoie les articles
+                .then(response => response.json())
+                .then(articles => {
+                    const articlesList = document.getElementById('articlesList');
+                    articles.forEach(article => {
+                        const articleCard = `
+                            <div class="col-md-4">
+                                <div class="card mb-4 shadow-sm">
+                                    <img src="${article.image}" class="card-img-top" alt="${article.name}">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${article.name}</h5>
+                                        <p class="card-text">${article.description}</p>
+                                        <p class="card-text">Prix: ${article.price} €</p>
+                                        <p class="card-text">Quantité disponible: ${article.quantity}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        articlesList.innerHTML += articleCard;
+                    });
+                })
+                .catch(error => console.error('Erreur lors de la récupération des articles :', error));
+        });
+    </script>
+</body>
+</html>

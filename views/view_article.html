@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de l'article</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <img src="" class="card-img-top" id="article-image" alt="Image de l'article">
+            <div class="card-body">
+                <h1 class="card-title" id="article-name"></h1>
+                <p class="card-text" id="article-description"></p>
+                <p class="card-text" id="article-price"></p>
+                <p class="card-text" id="article-quantity"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript pour charger les détails de l'article depuis l'API
+        fetch('/articles')
+            .then(response => response.json())
+            .then(articles => {
+                const articleCode = window.location.pathname.split('/').pop(); // Récupère le code de l'article depuis l'URL
+                const article = articles.find(a => a.code === articleCode);
+
+                if (article) {
+                    document.getElementById('article-image').src = article.image; // Charge l'image de l'article
+                    document.getElementById('article-name').textContent = article.name;
+                    document.getElementById('article-description').textContent = article.description;
+                    document.getElementById('article-price').textContent = 'Prix: ' + article.price + ' €';
+                    document.getElementById('article-quantity').textContent = 'Quantité disponible: ' + article.quantity;
+                } else {
+                    document.getElementById('article-name').textContent = 'Article non trouvé';
+                }
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement des détails de l\'article', error);
+                document.getElementById('article-name').textContent = 'Erreur de chargement';
+            });
+    </script>
+</body>
+</html>

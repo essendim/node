@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un article</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-4">Créer un article</h1>
+        <form action="/create-article" method="POST">
+            <div class="form-group">
+                <label for="name">Nom de l'article</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="code">Code Article</label>
+                <input type="text" class="form-control" id="code" name="code" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="image">Image (URL)</label>
+                <input type="url" class="form-control" id="image" name="image" required>
+            </div>
+            <div class="form-group">
+                <label for="price">Prix</label>
+                <input type="number" class="form-control" id="price" name="price" required>
+            </div>
+            <div class="form-group">
+                <label for="quantity">Quantité</label>
+                <input type="number" class="form-control" id="quantity" name="quantity" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Créer l'article</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
