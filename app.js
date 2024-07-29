@@ -1,11 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const fs = require('fs');
 const path = require('path');
 const session = require('express-session');
+const mongoose = require('mongoose');
+const User = require('./models/user'); // Notez le chemin relatif correct
+const Article = require('./models/article'); // Notez le chemin relatif correct
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+mongoose.connect('mongodb://localhost:27017/votre_base_de_donnees', { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('Connection error', err));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,13 +42,11 @@ app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'login.html'));
 });
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
-    fs.readFile('users.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const users = JSON.parse(data);
-        const user = users.find(user => user.username === username && user.password === password);
+    try {
+        const user = await User.findOne({ username, password });
 
         if (user) {
             req.session.loggedIn = true;
@@ -50,31 +54,33 @@ app.post('/login', (req, res) => {
         } else {
             res.status(401).send('Nom d’utilisateur ou mot de passe incorrect');
         }
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'register.html'));
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
     const { username, password } = req.body;
 
-    fs.readFile('users.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const users = JSON.parse(data);
-        const userExists = users.some(user => user.username === username);
+    try {
+        const userExists = await User.findOne({ username });
 
         if (userExists) {
             res.status(409).send('Nom d’utilisateur déjà pris');
         } else {
-            users.push({ username, password });
-            fs.writeFile('users.json', JSON.stringify(users, null, 2), (err) => {
-                if (err) throw err;
-                res.send('Inscription réussie !');
-            });
+            const newUser = new User({ username, password });
+            await newUser.save();
+            res.send('Inscription réussie !');
         }
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 // Page d'accueil une fois connecté
@@ -87,62 +93,51 @@ app.get('/create-article', requireLogin, (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'create_article.html'));
 });
 
-app.post('/create-article', requireLogin, (req, res) => {
+app.post('/create-article', requireLogin, async (req, res) => {
     const { name, code, description, image, price, quantity } = req.body;
 
-    fs.readFile('articles.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const articles = JSON.parse(data);
-        articles.push({ name, code, description, image, price, quantity });
-
-        fs.writeFile('articles.json', JSON.stringify(articles, null, 2), (err) => {
-            if (err) throw err;
-            res.send('Article créé avec succès !');
-        });
-    });
+    try {
+        const newArticle = new Article({ name, code, description, image, price, quantity });
+        await newArticle.save();
+        res.send('Article créé avec succès !');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur serveur');
+    }
 });
 
 // Route pour voir tous les articles
 app.get('/view-articles', (req, res) => {
-    fs.readFile('articles.json', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Erreur de lecture des articles');
-            return;
-        }
-        const articles = JSON.parse(data);
-        res.sendFile(path.join(__dirname, 'views', 'view_articles.html'));
-    });
+    res.sendFile(path.join(__dirname, 'views', 'view_articles.html'));
 });
 
-app.get('/articles', (req, res) => {
-    fs.readFile('articles.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const articles = JSON.parse(data);
+app.get('/articles', async (req, res) => {
+    try {
+        const articles = await Article.find();
         res.json(articles);
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur de lecture des articles');
+    }
 });
 
 // Route pour visualiser un article spécifique
-// Assurez-vous que toutes les routes qui servent des fichiers HTML statiques utilisent res.sendFile()
-app.get('/view-article/:code', (req, res) => {
+app.get('/view-article/:code', async (req, res) => {
     const articleCode = req.params.code;
 
-    fs.readFile('articles.json', 'utf8', (err, data) => {
-        if (err) throw err;
-        const articles = JSON.parse(data);
-        const article = articles.find(a => a.code === articleCode);
+    try {
+        const article = await Article.findOne({ code: articleCode });
 
         if (article) {
             res.sendFile(path.join(__dirname, 'views', 'view_article.html'));
         } else {
             res.status(404).send('Article non trouvé');
         }
-    });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur serveur');
+    }
 });
-
-
-
 
 app.listen(PORT, () => {
     console.log(`Serveur démarré sur le port ${PORT}`);
